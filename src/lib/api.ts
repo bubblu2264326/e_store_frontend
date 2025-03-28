@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Product } from './types';
-import dotenv from 'dotenv';
-dotenv.config();
-const API_BASE_URL = process.env.backend_url;
+
+
+const API_BASE_URL = "https://estorebackend-production.up.railway.app"
 
 export const api = {
   // Get all products
