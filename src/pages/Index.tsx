@@ -3,7 +3,8 @@ import HeroSection from '@/components/HeroSection';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import { ArrowRight, BadgeCheck, Truck, LifeBuoy, ShieldCheck, Sparkles, Cpu, Sofa, Shirt, Book, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { api, Product } from '@/lib/api';
+import { api } from '@/lib/api';
+import { Product } from '@/lib/types';
 
 const Index: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);

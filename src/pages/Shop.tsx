@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Product } from '@/lib/types';
 import { api } from '@/lib/api';
 import { useCart } from '@/lib/cart';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import ProductCard from '@/components/ProductCard';
 
 const Shop: React.FC = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,6 +74,10 @@ const Shop: React.FC = () => {
 
     setFilteredProducts(filtered);
   }, [products, searchQuery, selectedCategory, sortBy]);
+
+  const handleViewDetails = (product: Product) => {
+    navigate(`/product/${product.id}`);
+  };
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
@@ -164,35 +170,11 @@ const Shop: React.FC = () => {
           </div>
         ) : (
           filteredProducts.map((product) => (
-            <div key={product.id} className="group">
-              <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={product.thumbnail}
-                  alt={product.title}
-                  className="h-full w-full object-cover object-center group-hover:opacity-75"
-                />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    onClick={() => handleAddToCart(product)}
-                    className="bg-white text-black hover:bg-gray-100"
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-              <div className="mt-4">
-                <h3 className="text-sm font-medium text-gray-900">{product.title}</h3>
-                <p className="mt-1 text-sm text-gray-500">{product.category}</p>
-                <div className="mt-2 flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-900">${product.price}</p>
-                  <div className="flex items-center">
-                    <span className="text-sm text-gray-500 mr-2">★</span>
-                    <span className="text-sm text-gray-500">{product.rating}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProductCard
+              key={product.id}
+              product={product}
+              onViewDetails={handleViewDetails}
+            />
           ))
         )}
       </div>

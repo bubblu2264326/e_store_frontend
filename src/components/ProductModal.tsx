@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { X, ShoppingBag, ChevronRight, ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Product } from '@/lib/api';
+import { Product } from '@/lib/types';
 import { toast } from 'sonner';
+import { useCart } from '@/lib/cart';
 
 interface ProductModalProps {
   product: Product;
@@ -10,22 +11,15 @@ interface ProductModalProps {
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? product.images.length - 1 : prev - 1
-    );
-  };
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === product.images.length - 1 ? 0 : prev + 1
-    );
-  };
+  const { addToCart } = useCart();
 
   const handleAddToCart = () => {
+    // Add the product to cart with the selected quantity
+    for (let i = 0; i < quantity; i++) {
+      addToCart(product);
+    }
+    
     toast.success(`Added ${quantity} ${product.title} to your cart`, {
       description: `$${(product.price * quantity).toFixed(2)}`,
       action: {
@@ -49,51 +43,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
         </Button>
         
         <div className="flex flex-col md:flex-row">
-          {/* Product images */}
+          {/* Product Image */}
           <div className="w-full md:w-1/2 h-[300px] md:h-auto relative bg-secondary/20">
             <img 
-              src={product.images[currentImageIndex]} 
+              src={product.thumbnail} 
               alt={product.title}
               className="w-full h-full object-cover"
             />
-            
-            {/* Image navigation */}
-            <div className="absolute inset-x-0 top-1/2 flex items-center justify-between px-4 -translate-y-1/2">
-              <Button 
-                variant="secondary" 
-                size="icon" 
-                className="rounded-full bg-white/80 hover:bg-white"
-                onClick={handlePrevImage}
-              >
-                <ChevronLeft size={18} />
-              </Button>
-              <Button 
-                variant="secondary" 
-                size="icon" 
-                className="rounded-full bg-white/80 hover:bg-white"
-                onClick={handleNextImage}
-              >
-                <ChevronRight size={18} />
-              </Button>
-            </div>
-            
-            {/* Image thumbnails */}
-            <div className="absolute bottom-4 inset-x-0 flex items-center justify-center gap-2">
-              {product.images.map((_, index) => (
-                <button 
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentImageIndex 
-                      ? 'bg-primary w-8' 
-                      : 'bg-white/70'
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </div>
           </div>
           
-          {/* Product info */}
+          {/* Product Info */}
           <div className="w-full md:w-1/2 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-medium py-1 px-2 bg-primary/10 text-primary rounded">
@@ -164,48 +123,33 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
                   <span className="text-sm font-medium">{product.stock} units</span>
                 </div>
                 <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Material</span>
+                  <span className="text-sm font-medium">{product.material}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Color</span>
+                  <span className="text-sm font-medium">{product.color}</span>
+                </div>
+                <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">Warranty</span>
-                  <span className="text-sm font-medium">{product.warrantyInformation}</span>
+                  <span className="text-sm font-medium">{product.warranty}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">Shipping</span>
-                  <span className="text-sm font-medium">{product.shippingInformation}</span>
+                  <span className="text-sm font-medium">{product.shipping.dimensions}</span>
                 </div>
               </div>
             </div>
             
-            {/* Reviews */}
-            {product.reviews.length > 0 && (
+            {/* Features */}
+            {product.features.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-sm font-semibold mb-3">Customer Reviews</h3>
-                <div className="space-y-3">
-                  {product.reviews.map((review, index) => (
-                    <div key={index} className="border-b pb-3 last:border-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              size={12} 
-                              className={`${
-                                i < review.rating 
-                                  ? 'fill-yellow-400 text-yellow-400' 
-                                  : 'fill-gray-200 text-gray-200'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(review.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <p className="text-sm">{review.comment}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        by {review.reviewerName}
-                      </p>
-                    </div>
+                <h3 className="text-sm font-semibold mb-3">Features</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {product.features.map((feature, index) => (
+                    <li key={index} className="text-sm text-muted-foreground">{feature}</li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
             
@@ -249,7 +193,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
                 className="h-12 flex-1"
                 onClick={onClose}
               >
-                Continue Shopping
+                Close
               </Button>
             </div>
           </div>

@@ -9,6 +9,7 @@ import Collections from '@/pages/Collections';
 import About from '@/pages/About';
 import NotFound from '@/pages/NotFound';
 import Manage from '@/pages/Manage';
+import ProductDetails from '@/pages/ProductDetails';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/collections" element={<Collections />} />
               <Route path="/about" element={<About />} />
               <Route path="/manage" element={<Manage />} />
