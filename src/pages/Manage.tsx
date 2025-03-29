@@ -81,6 +81,13 @@ const Manage: React.FC = () => {
         discountPercentage: 0,
         brand: 'Generic',
         features: [],
+        sku: `SKU-${Date.now()}`,
+        weight: 1,
+        dimensions: { length: 10, width: 10, height: 10 },
+        material: 'Standard',
+        color: 'Various',
+        warranty: '1 Year',
+        shipping: { weight: 1, dimensions: '10x10x10' }
       };
 
       await api.createProduct(productData);
